@@ -56,22 +56,6 @@ namespace Main
             }
         }
 
-        public void UpdateControlProperty<TControl, TProperty>(TControl control, string propertyName, TProperty value) where TControl : Control
-        {
-            if (control.InvokeRequired)
-            {
-                control.Invoke(new Action<TControl, string, TProperty>(UpdateControlProperty), new object[] { control, propertyName, value });//Invoke 将该方法抛到控件线程中执行
-            }
-            else
-            {
-                var propertyInfo = control.GetType().GetProperty(propertyName);
-                if (propertyInfo != null && propertyInfo.CanWrite && propertyInfo.PropertyType == typeof(TProperty))
-                {
-                    propertyInfo.SetValue(control, value);
-                }
-            }
-        }
-
         public Funcs.Baidu baidu_sdk;
         public Funcs.OpenAI openai_sdk;
 
@@ -93,6 +77,10 @@ namespace Main
                 data_ini.Sections.AddSection("baidu");
                 data_ini["baidu"].AddKey("api_key", "");
                 data_ini["baidu"].AddKey("secret_key", "");
+
+                data_ini.Sections.AddSection("openai");
+                data_ini["openai"].AddKey("base", "");
+                data_ini["openai"].AddKey("token", "");
 
                 data_ini.Sections.AddSection("openai");
                 data_ini["openai"].AddKey("base", "");
@@ -178,7 +166,7 @@ namespace Main
                 }
             }
 
-            UpdateControlProperty(UI_TextBox, "Text", words_join);
+            Funcs.UpdateControlProperty(UI_TextBox, "Text", words_join);
 
             Console.WriteLine("开始翻译");
 
@@ -189,7 +177,7 @@ namespace Main
 
                 string replacedText = transl_text.Replace("\r\n", "\r\n").Replace("\n", "\r\n");
 
-                UpdateControlProperty(UI_TextBox, "Text", replacedText);
+                Funcs.UpdateControlProperty(UI_TextBox, "Text", replacedText);
             },
             [
                 ChatMessage.FromSystem(openai_prompt),
@@ -203,7 +191,7 @@ namespace Main
 
         private void on_hot_ocr_regs()
         {
-            UpdateControlProperty(this, "Visible", false);
+            Funcs.UpdateControlProperty(this, "Visible", false);
             Rectangle captureRect;
             captureRect = new Rectangle(45, 420, 450, 235);
             Bitmap bitmap = new Bitmap(captureRect.Width, captureRect.Height);
@@ -211,39 +199,54 @@ namespace Main
             {
                 graphics.CopyFromScreen(captureRect.Location, Point.Empty, captureRect.Size);
             }
-            UpdateControlProperty(this, "Visible", true);
+            Funcs.UpdateControlProperty(this, "Visible", true);
             OcrAndTransl(Funcs.BitmapToByteArray(bitmap));
         }
 
         private void on_hot_ocr()
         {
             bool sveble = this.Visible;
-            UpdateControlProperty(this, "Visible", false);
+            Funcs.UpdateControlProperty(this, "Visible", false);
             int PrSata = PrScrn();
             if (PrSata == 1)
             {
                 Console.WriteLine("截图成功");
                 if (Clipboard.ContainsImage())
                 {
-                    UpdateControlProperty(this, "Visible", true);
+                    Funcs.UpdateControlProperty(this, "Visible", true);
                     OcrAndTransl(Funcs.BitmapToByteArray((Bitmap)Clipboard.GetImage()));
 
                 }
                 else
                 {
-                    UpdateControlProperty(this, "Visible", sveble);
+                    Funcs.UpdateControlProperty(this, "Visible", sveble);
                     Console.WriteLine("从剪辑板获取图片失败");
                 }
             }
             else
             {
-                UpdateControlProperty(this, "Visible", sveble);
+                Funcs.UpdateControlProperty(this, "Visible", sveble);
                 Console.WriteLine("取消截图");
             }
         }
     }
     public class Funcs
     {
+        public static void UpdateControlProperty<TControl, TProperty>(TControl control, string propertyName, TProperty value) where TControl : Control
+        {
+            if (control.InvokeRequired)
+            {
+                control.Invoke(new Action<TControl, string, TProperty>(UpdateControlProperty), new object[] { control, propertyName, value });//Invoke 将该方法抛到控件线程中执行
+            }
+            else
+            {
+                var propertyInfo = control.GetType().GetProperty(propertyName);
+                if (propertyInfo != null && propertyInfo.CanWrite && propertyInfo.PropertyType == typeof(TProperty))
+                {
+                    propertyInfo.SetValue(control, value);
+                }
+            }
+        }
         public class Baidu
         {
             private readonly Ocr client;
@@ -339,7 +342,6 @@ namespace Main
                         MaxTokens = MaxTokens,
                         Model = Model
                     });
-
                 try
                 {
                     await foreach (var completion in completionResult)
@@ -355,9 +357,9 @@ namespace Main
                         }
                     }
                 }
-                catch (Exception ex) // 捕获子线程异常
-                { // 缺失 - System.ComponentModel.Annotations 
-                    Console.WriteLine($"发生异常: {ex.Data}");
+                catch (Exception e) // 捕获子线程异常
+                {
+                    Console.WriteLine($"发生异常: {e.Data}");
                     throw;
                 }
                 return true;

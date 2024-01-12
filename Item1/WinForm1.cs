@@ -53,8 +53,10 @@ namespace Main
                 case key_win_transl:
                     if (WinForm2.IsDisposed)
                     {
-                        WinForm2 = new UI2_Body();
-                        WinForm2.StartPosition = FormStartPosition.Manual;
+                        WinForm2 = new UI2_Body(this)
+                        {
+                            StartPosition = FormStartPosition.Manual
+                        };
                         if (this.Visible)
                         {
                             WinForm2.Left = this.Left + this.Width - 8;
@@ -66,26 +68,26 @@ namespace Main
                     {
                         WinForm2.Visible = !WinForm2.Visible;
                     }
-                    Console.WriteLine($"译中为外窗口 : ${hotKeyId}");
+                    Console.WriteLine($"输入窗口 : ${hotKeyId}");//F2
                     break;
                 case key_ocr_regs:
-                    Console.WriteLine($"固定区域识别 : ${hotKeyId}");
+                    Console.WriteLine($"固定区域识别 : ${hotKeyId}");//F3
                     thread = new Thread(on_hot_ocr_regs);
                     thread.SetApartmentState(ApartmentState.STA);
                     thread.Start();
                     break;
                 case key_ocr:
-                    Console.WriteLine($"自定义区域识别 : ${hotKeyId}");
+                    Console.WriteLine($"自定义区域识别 : ${hotKeyId}");//F4
                     thread = new Thread(on_hot_ocr);
                     thread.SetApartmentState(ApartmentState.STA);
                     thread.Start();
                     break;
                 case key_show_or_hide: 
                     this.Visible = !this.Visible;
-                    Console.WriteLine($"显示或隐藏 : ${hotKeyId}");
+                    Console.WriteLine($"显示或隐藏 : ${hotKeyId}");//Home
                     break;
                 case key_close:
-                    Console.WriteLine($"关闭程序 : ${hotKeyId}");
+                    Console.WriteLine($"关闭程序 : ${hotKeyId}");//End
                     this.Close();
                     break;
             }
@@ -100,19 +102,18 @@ namespace Main
 
             SetWindowLong(this.Handle,GWL_EXSTYLE, WS_EX_NOACTIVATE|WS_EX_LAYERED);
 
-            List<bool> HotStat = new List<bool>
-            {
+            List<bool> HotStat = [
                 NativeMethods.RegisterHotKey(this.Handle, key_win_transl, KeyModifiers.None, Keys.F2),
                 NativeMethods.RegisterHotKey(this.Handle, key_ocr_regs, KeyModifiers.None, Keys.F3),
                 NativeMethods.RegisterHotKey(this.Handle, key_ocr, KeyModifiers.None, Keys.F4),
                 NativeMethods.RegisterHotKey(this.Handle, key_show_or_hide, KeyModifiers.None, Keys.Home),
                 NativeMethods.RegisterHotKey(this.Handle, key_close, KeyModifiers.None, Keys.End)
-            };
+            ];
 
             this.Left = 165;
             this.Top = 702;
 
-            WinForm2 = new UI2_Body();
+            WinForm2 = new UI2_Body(this);
 
             WinForm2.StartPosition = FormStartPosition.Manual;
 

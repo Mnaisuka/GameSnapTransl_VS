@@ -1,0 +1,21 @@
+﻿<Window x:Class="WebForm.TranslWindow2"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WebForm"
+        mc:Ignorable="d"
+        Title="TranslForm1" Height="204" Width="272">
+    <Grid>
+        <TextBox x:Name="UI2_TextBox_Input" VerticalContentAlignment="Center" Margin="65,10,55,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="24" KeyDown="UI2_TextBox_Input_KeyDown" KeyUp="UI2_TextBox_Input_KeyUp"/>
+        <TextBox x:Name="UI2_RichTextBox" TextWrapping="Wrap" Text="" Margin="10,44,10,10"/>
+        <Button x:Name="UI2_Button_Transl" Content="翻译" Margin="0,10,10,0" HorizontalAlignment="Right" Width="40" Height="24" VerticalAlignment="Top" Click="Button_Click"/>
+        <ComboBox x:Name="UI2_ComBox_Lang" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="56" Height="24" SelectedIndex="0">
+            <ComboBoxItem Content="英语" Tag="English"/>
+            <ComboBoxItem Content="日语" Tag="Japanese"/>
+            <ComboBoxItem Content="韩语" Tag="Korean"/>
+            <ComboBoxItem Content="俄语" Tag="Russian"/>
+        </ComboBox>
+
+    </Grid>
+</Window>
